@@ -6,12 +6,17 @@ Copyright (c) geekofia 2022 and beyond
 */
 
 import express from 'express'
+import { nanoid } from 'nanoid'
 
 const router = express.Router()
 
-router.get('/', (req, res) => {
+router.post('/generate', (req, res) => {
+  // const { user } = req.body
+  const referralCode = nanoid(6)
+
   res.json({
-    message: 'Hello World!'
+    user: 'email@domain.org',
+    referralCode
   })
 })
 

@@ -5,36 +5,110 @@ Created: Tue Jun 28 2022 20:10:54 GMT+0530 (India Standard Time)
 Copyright (c) geekofia 2022 and beyond
 */
 
-// let users
+import { ObjectId } from 'mongodb'
 
-// export default class UsersDAO {
-//   static async injectDB (conn) {
-//     if (users) {
-//       return
-//     }
-//     try {
-//       users = await conn.db(process.env.DB_NS).collection('users')
-//     } catch (e) {
-//       console.error(`Unable to establish collection handles in userDAO: ${e}`)
-//     }
-//   }
+let users
 
-//   /***************************************************************************
-//    * CRUD METHODS
-//    ***************************************************************************/
+export default class UsersDAO {
+  static async injectDB (conn) {
+    if (users) {
+      return
+    }
+    try {
+      users = await conn.db(process.env.DB_NS).collection('users')
+    } catch (e) {
+      console.error(`Unable to establish collection handles in userDAO: ${e}`)
+    }
+  }
 
-//   /**
-//    * Finds a user in the `users` collection
-//    * @param {string} email - The email of the desired user
-//    * @returns {User | null} Returns either a single user or nothing
-//    */
-//   static async getOneUser (email: string) {
-//     // Retrieve the user document corresponding with the user's email.
-//     try {
-//       return await users.findOne({ email })
-//     } catch (e) {
-//       console.error(`Unable to retrieve user from users collection: ${e}`)
-//       return null
-//     }
-//   }
-// }
+  /***************************************************************************
+   * READ METHODS
+   ***************************************************************************/
+
+  /**
+   * Finds a user in the `users` collection
+   * @param {string} email The email of the desired user
+   * @returns {UserType | null} Returns either a single user or nothing
+   */
+  static async getOneUser (email: string) {
+    // Retrieve the user document corresponding with the user's email.
+    try {
+      return await users.findOne({ email })
+    } catch (e) {
+      console.error(`Unable to retrieve user from users collection: ${e}`)
+      return null
+    }
+  }
+
+  /**
+   * Finds a user in the `users` collection
+   * @param {string} email The email of the desired user
+   * @returns {UserType | null} Returns either a single user or nothing
+   */
+  static async getOneUserWithPassword (email: string, password: string) {
+    // Retrieve the user document corresponding with the user's email.
+    try {
+      return await users.findOne({ email, password })
+    } catch (e) {
+      console.error(`Unable to retrieve user from users collection: ${e}`)
+      return null
+    }
+  }
+
+  /***************************************************************************
+   * CREATE METHODS
+   ***************************************************************************/
+
+  /**
+   * Inserts a user in the `users` collection
+   * @param {string} email The email of the desired user
+   * @param {string} password The password of the desired user
+   * @param {string | null} referralCode The referral code of the desired user
+   * @param {string | null} referrer The referral code of the referrer
+   * @returns {string | null} Returns _id of the inserted user
+   */
+  static async addOneUser (
+    email: string,
+    password: string,
+    referralCode: string,
+    referrer?: string
+  ) {
+    try {
+      const { insertedId } = await users.insertOne({
+        email,
+        password,
+        referralCode,
+        referrer
+      })
+
+      return insertedId
+    } catch (e) {
+      console.error(`Unable to add user to the users collection: ${e}`)
+      return null
+    }
+  }
+
+  /***************************************************************************
+   * DELETE METHODS
+   ***************************************************************************/
+
+  /**
+   * Deletes a user in the `users` collection
+   * @param {string} _id The _id of the user
+   * @param {string} email The email of the user
+   * @param {string} password The password of the user
+   * @returns {string | null} Returns _id of the deleted user
+   */
+  static async deleteOneUser (_id: string) {
+    try {
+      const { deletedCount } = await users.deleteOne({
+        _id: new ObjectId(_id)
+      })
+
+      return deletedCount
+    } catch (e) {
+      console.error(`Unable to delete user from the users collection: ${e}`)
+      return null
+    }
+  }
+}

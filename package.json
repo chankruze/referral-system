@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/chankruze/minimal-express-server#readme",
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "@types/jest": "^27.4.1",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",

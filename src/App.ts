@@ -10,7 +10,8 @@ import cors from 'cors'
 import morgan from 'morgan'
 import helmet from 'helmet'
 // routes
-import rootRoutes from './routes'
+import authRoutes from './routes/user'
+import referralRoutes from './routes/referral'
 
 class App {
   public app
@@ -33,7 +34,8 @@ class App {
 
   private mountRoutes (): void {
     // mount routes
-    this.app.use('/', rootRoutes)
+    this.app.use('/user/', authRoutes)
+    this.app.use('/referral/', referralRoutes)
   }
 }
 
