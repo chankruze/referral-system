@@ -7,9 +7,12 @@ Copyright (c) geekofia 2022 and beyond
 
 import express from 'express'
 import { nanoid } from 'nanoid'
+import bcrypt from 'bcrypt'
+
 import UsersDAO from '../dao/usersDAO'
+
+// types
 import { UserType } from '../types/user'
-// import axios from 'axios'
 
 const router = express.Router()
 
@@ -17,15 +20,25 @@ router.post('/signin', async (req, res) => {
   const { email, password } = req.body
 
   // check db for existing user
-  const user = await UsersDAO.getOneUserWithPassword(email, password)
+  const user: UserType | null = await UsersDAO.getOneUser(email)
 
-  if (user) {
+  if (!user) {
+    return res.status(404).json({
+      message: `user with ${email} does not exists`
+    })
+  }
+
+  const match = bcrypt.compareSync(password, user.password)
+
+  // password matches
+  if (match) {
     return res.json({
       message: 'login successful',
       user
     })
   }
 
+  // password don't match
   return res.status(401).json({
     message: 'invalid credentials'
   })
@@ -47,11 +60,12 @@ router.post('/signup', async (req, res) => {
 
   // generate unique referral code for the account
   const referralCode = nanoid(6)
+  const hashedPass = bcrypt.hashSync(password, 10)
 
   // register the user with give credentials
   const insertedId = await UsersDAO.addOneUser(
     email,
-    password,
+    hashedPass,
     referralCode,
     referrer
   )

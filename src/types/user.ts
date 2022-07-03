@@ -8,5 +8,6 @@ Copyright (c) geekofia 2022 and beyond
 export type UserType = {
   email: string
   password: string
+  referralCode: string
   referrer?: string
 }
