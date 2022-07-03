@@ -27,13 +27,12 @@ export default class UsersDAO {
 
   /**
    * Finds a user in the `users` collection
-   * @param {string} email The email of the desired user
+   * @param {string} _id The email of the desired user
    * @returns {UserType | null} Returns either a single user or nothing
    */
-  static async getOneUser (email: string) {
-    // Retrieve the user document corresponding with the user's email.
+  static async getOneUserById (_id: string) {
     try {
-      return await users.findOne({ email })
+      return await users.findOne({ _id: new ObjectId(_id) })
     } catch (e) {
       console.error(`Unable to retrieve user from users collection: ${e}`)
       return null
@@ -45,10 +44,10 @@ export default class UsersDAO {
    * @param {string} email The email of the desired user
    * @returns {UserType | null} Returns either a single user or nothing
    */
-  static async getOneUserWithPassword (email: string, password: string) {
+  static async getOneUserByEmail (email: string) {
     // Retrieve the user document corresponding with the user's email.
     try {
-      return await users.findOne({ email, password })
+      return await users.findOne({ email })
     } catch (e) {
       console.error(`Unable to retrieve user from users collection: ${e}`)
       return null
@@ -70,15 +69,15 @@ export default class UsersDAO {
   static async addOneUser (
     email: string,
     password: string,
-    referralCode: string,
-    referrer?: string
+    referralCodeId: string,
+    referrerCodeId?: string
   ) {
     try {
       const { insertedId } = await users.insertOne({
         email,
         password,
-        referralCode,
-        referrer
+        referralCodeId,
+        referrerCodeId
       })
 
       return insertedId
@@ -95,9 +94,7 @@ export default class UsersDAO {
   /**
    * Deletes a user in the `users` collection
    * @param {string} _id The _id of the user
-   * @param {string} email The email of the user
-   * @param {string} password The password of the user
-   * @returns {string | null} Returns _id of the deleted user
+   * @returns {number | null} Returns deleted count
    */
   static async deleteOneUser (_id: string) {
     try {

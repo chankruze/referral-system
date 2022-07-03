@@ -6,8 +6,9 @@ Copyright (c) geekofia 2022 and beyond
 */
 
 export type UserType = {
+  _id?: string
   email: string
   password: string
-  referralCode: string
-  referrer?: string
+  referralCodeId: string // _id of a referralCode
+  referrerCodeId?: string // _id of the referrer's referralCode
 }
